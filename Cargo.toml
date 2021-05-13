@@ -1,6 +1,6 @@
 [package]
 name = "tinix_alloc"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -9,3 +9,4 @@ edition = "2018"
 x86_64 = "0.13.2"
 bootloader = { version = "0.9.8", features = ["map_physical_memory"]}
 linked_list_allocator = "0.8.0"
+alloc = "*"
