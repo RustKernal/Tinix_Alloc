@@ -1,9 +1,13 @@
+use x86_64::PhysAddr;
+use x86_64::registers::control::Cr3;
 use x86_64::{
-    PhysAddr,
+    structures::paging::PageTable,
+    VirtAddr,
     structures::paging::{Page, PhysFrame, Mapper, Size4KiB, FrameAllocator}
 };
 use x86_64::structures::paging::OffsetPageTable;
-/// Creates an example mapping for the given page to frame `0xb8000`.
+use bootloader::bootinfo::MemoryRegionType;
+
 pub fn create_example_mapping(
     page: Page,
     mapper: &mut OffsetPageTable,
@@ -19,6 +23,14 @@ pub fn create_example_mapping(
         mapper.map_to(page, frame, flags, frame_allocator)
     };
     map_to_result.expect("map_to failed").flush();
+}
+
+pub struct EmptyFrameAllocator;
+
+unsafe impl FrameAllocator<Size4KiB> for EmptyFrameAllocator {
+    fn allocate_frame(&mut self) -> Option<PhysFrame> {
+        None
+    }
 }
 
 use bootloader::bootinfo::MemoryMap;
@@ -41,11 +53,7 @@ impl BootInfoFrameAllocator {
             next: 0,
         }
     }
-}
 
-use bootloader::bootinfo::MemoryRegionType;
-
-impl BootInfoFrameAllocator {
     /// Returns an iterator over the usable frames specified in the memory map.
     fn usable_frames(&self) -> impl Iterator<Item = PhysFrame> {
         // get usable regions from memory map
@@ -60,7 +68,7 @@ impl BootInfoFrameAllocator {
         // create `PhysFrame` types from the start addresses
         frame_addresses.map(|addr| PhysFrame::containing_address(PhysAddr::new(addr)))
     }
-}
+}   
 
 unsafe impl FrameAllocator<Size4KiB> for BootInfoFrameAllocator {
     fn allocate_frame(&mut self) -> Option<PhysFrame> {
