@@ -6,6 +6,7 @@ use bootloader::BootInfo;
 pub mod paging;
 pub mod memory;
 pub mod allocator;
+pub mod structures;
 use alloc::alloc::{GlobalAlloc, Layout};
 use core::ptr::null_mut;
 
